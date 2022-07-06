@@ -1,39 +1,43 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { PersonEntity } from './entities/person.entity';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 
 @Injectable()
 export class PersonsService {
-  private readonly persons: PersonEntity[] = [];
+  constructor(
+    @InjectRepository(PersonEntity)
+    private readonly personsRepository: Repository<PersonEntity>,
+  ) {}
 
   find() {
-    return this.persons;
+    return this.personsRepository.find();
   }
 
   findOne(id: number) {
-    return this.persons.find(person => person.id === id);
+    return this.personsRepository.findOne({ where: { id } });
   }
 
   create(createPersonDto: CreatePersonDto) {
-    const person = { ...createPersonDto, id: this.persons.length };
-    this.persons.push(person);
-    return person;
+    const person = this.personsRepository.create(createPersonDto);
+    return this.personsRepository.save(person);
   }
 
-  update(id: number, updatePersonDto: UpdatePersonDto) {
-    const person = this.findOne(id);
+  async update(id: number, updatePersonDto: UpdatePersonDto) {
+    const person = await this.personsRepository.preload({ id, ...updatePersonDto });
     if (!person) {
       throw new NotFoundException(`#${id} is not found`);
     }
-    return Object.assign(person, updatePersonDto);
+    return this.personsRepository.save(person);
   }
 
-  remove(id: number) {
-    const index = this.persons.findIndex(person => person.id === id);
-    if (index < 0) {
+  async remove(id: number) {
+    const person = await this.findOne(id);
+    if (!person) {
       throw new NotFoundException(`#${id} is not found`);
     }
-    return this.persons.splice(index, 1);
+    return this.personsRepository.remove(person);
   }
 }
