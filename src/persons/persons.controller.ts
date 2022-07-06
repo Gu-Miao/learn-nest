@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
-import { PersonEntity } from './entities/person.entity';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { PersonsService } from './persons.service';
+import { CreatePersonDto } from './dto/create-person.dto';
+import { UpdatePersonDto } from './dto/update-person.dto';
 
 @Controller('persons')
 export class PersonsController {
@@ -12,22 +13,22 @@ export class PersonsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: number) {
     return this.personsService.findOne(id);
   }
 
   @Post()
-  create(@Body() createPersonDto: Omit<PersonEntity, 'id'>) {
+  create(@Body() createPersonDto: CreatePersonDto) {
     return this.personsService.create(createPersonDto);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePersonDto: Partial<Omit<PersonEntity, 'id'>>) {
+  update(@Param('id') id: number, @Body() updatePersonDto: UpdatePersonDto) {
     return this.personsService.update(id, updatePersonDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: number) {
     return this.personsService.remove(id);
   }
 }

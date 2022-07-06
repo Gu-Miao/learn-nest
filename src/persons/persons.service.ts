@@ -1,5 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PersonEntity } from './entities/person.entity';
+import { CreatePersonDto } from './dto/create-person.dto';
+import { UpdatePersonDto } from './dto/update-person.dto';
 
 @Injectable()
 export class PersonsService {
@@ -9,17 +11,17 @@ export class PersonsService {
     return this.persons;
   }
 
-  findOne(id: string) {
+  findOne(id: number) {
     return this.persons.find(person => person.id === id);
   }
 
-  create(createPersonDto: Omit<PersonEntity, 'id'>) {
-    const person = { ...createPersonDto, id: this.persons.length.toString() };
+  create(createPersonDto: CreatePersonDto) {
+    const person = { ...createPersonDto, id: this.persons.length };
     this.persons.push(person);
     return person;
   }
 
-  update(id: string, updatePersonDto: Partial<Omit<PersonEntity, 'id'>>) {
+  update(id: number, updatePersonDto: UpdatePersonDto) {
     const person = this.findOne(id);
     if (!person) {
       throw new NotFoundException(`#${id} is not found`);
@@ -27,7 +29,7 @@ export class PersonsService {
     return Object.assign(person, updatePersonDto);
   }
 
-  remove(id: string) {
+  remove(id: number) {
     const index = this.persons.findIndex(person => person.id === id);
     if (index < 0) {
       throw new NotFoundException(`#${id} is not found`);
