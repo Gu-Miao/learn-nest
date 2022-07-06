@@ -11,8 +11,12 @@ export class PersonsService {
     return this.persons;
   }
 
-  findOne(id: number) {
-    return this.persons.find(person => person.id === id);
+  async findOne(id: number) {
+    const person = this.persons.find(person => person.id === id);
+    if (!person) {
+      throw new NotFoundException(`#${id} is not found`);
+    }
+    return person;
   }
 
   create(createPersonDto: CreatePersonDto) {
