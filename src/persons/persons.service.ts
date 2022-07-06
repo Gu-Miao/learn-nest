@@ -16,8 +16,12 @@ export class PersonsService {
     return this.personsRepository.find();
   }
 
-  findOne(id: number) {
-    return this.personsRepository.findOne({ where: { id } });
+  async findOne(id: number) {
+    const person = await this.personsRepository.findOne({ where: { id } });
+    if (!person) {
+      throw new NotFoundException(`#${id} is not found`);
+    }
+    return person;
   }
 
   create(createPersonDto: CreatePersonDto) {
@@ -35,9 +39,6 @@ export class PersonsService {
 
   async remove(id: number) {
     const person = await this.findOne(id);
-    if (!person) {
-      throw new NotFoundException(`#${id} is not found`);
-    }
     return this.personsRepository.remove(person);
   }
 }
