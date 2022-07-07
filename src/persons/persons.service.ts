@@ -5,6 +5,7 @@ import { PersonEntity } from './entities/person.entity';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { HobbyEntity } from './entities/hobby.entity';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Injectable()
 export class PersonsService {
@@ -15,11 +16,11 @@ export class PersonsService {
     private readonly hobbyRepository: Repository<HobbyEntity>,
   ) {}
 
-  find() {
+  find(paginationDto: PaginationDto) {
     return this.personsRepository.find({
-      relations: {
-        hobbies: true,
-      },
+      relations: { hobbies: true },
+      skip: paginationDto.offset,
+      take: paginationDto.limit,
     });
   }
 
