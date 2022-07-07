@@ -15,6 +15,9 @@ export class PersonEntity {
   @Column()
   gender: 0 | 1;
 
+  @Column({ default: 0 })
+  messages: number;
+
   @JoinTable()
   @ManyToMany(() => HobbyEntity, hobby => hobby.persons, { cascade: true })
   readonly hobbies: HobbyEntity[];

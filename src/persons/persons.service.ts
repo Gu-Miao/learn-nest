@@ -1,11 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { PersonEntity } from './entities/person.entity';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { HobbyEntity } from './entities/hobby.entity';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { EventEntity } from 'src/events/entities/event.entity';
 
 @Injectable()
 export class PersonsService {
@@ -14,6 +15,7 @@ export class PersonsService {
     private readonly personsRepository: Repository<PersonEntity>,
     @InjectRepository(HobbyEntity)
     private readonly hobbyRepository: Repository<HobbyEntity>,
+    private readonly dataSource: DataSource,
   ) {}
 
   find(paginationDto: PaginationDto) {
@@ -63,5 +65,30 @@ export class PersonsService {
   async remove(id: number) {
     const person = await this.findOne(id);
     return this.personsRepository.remove(person);
+  }
+
+  async addMessage(person: PersonEntity) {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    queryRunner.connect();
+    queryRunner.startTransaction();
+    try {
+      person.messages++;
+
+      const event = new EventEntity();
+      event.name = 'add_person_message';
+      event.type = 'person';
+      event.payload = { personId: person.id, messages: person.messages };
+
+      queryRunner.manager.save(person);
+      queryRunner.manager.save(event);
+
+      queryRunner.commitTransaction();
+    } catch (error) {
+      console.error(error);
+      queryRunner.rollbackTransaction();
+    } finally {
+      queryRunner.release();
+    }
   }
 }
