@@ -1,19 +1,21 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { HobbyEntity } from './hobby.entity';
 
 @Entity('persons')
 export class PersonEntity {
   @PrimaryGeneratedColumn()
-  readonly id: number;
+  id: number;
 
   @Column()
-  readonly name: string;
+  name: string;
 
   @Column()
-  readonly age: number;
+  age: number;
 
   @Column()
-  readonly gender: 0 | 1;
+  gender: 0 | 1;
 
-  @Column('json', { nullable: true })
-  readonly hobbies: string[];
+  @JoinTable()
+  @ManyToMany(() => HobbyEntity, hobby => hobby.persons, { cascade: true })
+  readonly hobbies: HobbyEntity[];
 }
