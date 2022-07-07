@@ -15,5 +15,5 @@ export class PersonEntity {
   readonly gender: 0 | 1;
 
   @Column('json', { nullable: true })
-  readonly hobby: string[];
+  readonly hobbies: string[];
 }

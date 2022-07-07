@@ -12,5 +12,5 @@ export class CreatePersonDto {
   readonly gender: 0 | 1;
 
   @IsString({ each: true })
-  readonly hobby: string[];
+  readonly hobbies: string[];
 }
