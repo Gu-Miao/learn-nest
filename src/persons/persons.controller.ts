@@ -3,11 +3,13 @@ import { PersonsService } from './persons.service';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { Public } from 'src/common/decorartors/public.decorator';
 
 @Controller('persons')
 export class PersonsController {
   constructor(private readonly personsService: PersonsService) {}
 
+  @Public()
   @Get()
   find(@Query() paginationDto: PaginationDto) {
     return this.personsService.find(paginationDto);

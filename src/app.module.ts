@@ -5,6 +5,7 @@ import * as Joi from 'joi';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PersonsModule } from './persons/persons.module';
+import { CommonModule } from './common/common.module';
 import appConfig from './config/app.config';
 
 @Module({
@@ -32,6 +33,7 @@ import appConfig from './config/app.config';
       }),
     }),
     PersonsModule,
+    CommonModule,
   ],
   controllers: [AppController],
   providers: [AppService],
