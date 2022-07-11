@@ -5,6 +5,7 @@ import * as Joi from 'joi';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PersonsModule } from './persons/persons.module';
+import appConfig from './config/app.config';
 
 @Module({
   imports: [
@@ -16,16 +17,19 @@ import { PersonsModule } from './persons/persons.module';
         DATABASE_PASSWORD: Joi.required(),
         DATABASE_DATABASE: Joi.string().default('postgres'),
       }),
+      load: [appConfig],
     }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DATABASE_HOST,
-      port: +process.env.DATABASE_PORT,
-      username: process.env.DATABASE_USERNAME,
-      password: process.env.DATABASE_PASSWORD,
-      database: process.env.DATABASE_DATABASE,
-      autoLoadEntities: true,
-      synchronize: true,
+    TypeOrmModule.forRootAsync({
+      useFactory: () => ({
+        type: 'postgres',
+        host: process.env.DATABASE_HOST,
+        port: +process.env.DATABASE_PORT,
+        username: process.env.DATABASE_USERNAME,
+        password: process.env.DATABASE_PASSWORD,
+        database: process.env.DATABASE_DATABASE,
+        autoLoadEntities: true,
+        synchronize: true,
+      }),
     }),
     PersonsModule,
   ],

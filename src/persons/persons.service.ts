@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { PersonEntity } from './entities/person.entity';
@@ -7,6 +7,8 @@ import { UpdatePersonDto } from './dto/update-person.dto';
 import { HobbyEntity } from './entities/hobby.entity';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { EventEntity } from 'src/events/entities/event.entity';
+import { ConfigService, ConfigType } from '@nestjs/config';
+import personConfig from './config/person.config';
 
 @Injectable()
 export class PersonsService {
@@ -16,7 +18,11 @@ export class PersonsService {
     @InjectRepository(HobbyEntity)
     private readonly hobbyRepository: Repository<HobbyEntity>,
     private readonly dataSource: DataSource,
-  ) {}
+    @Inject(personConfig.KEY)
+    private readonly personConfiguration: ConfigType<typeof personConfig>,
+  ) {
+    console.log(this.personConfiguration.type);
+  }
 
   find(paginationDto: PaginationDto) {
     return this.personsRepository.find({
