@@ -7,7 +7,7 @@ import { UpdatePersonDto } from './dto/update-person.dto';
 import { HobbyEntity } from './entities/hobby.entity';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { EventEntity } from 'src/events/entities/event.entity';
-import { ConfigService, ConfigType } from '@nestjs/config';
+import { ConfigType } from '@nestjs/config';
 import personConfig from './config/person.config';
 
 @Injectable()
